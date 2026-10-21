@@ -1,0 +1,93 @@
+import agenciaDeViajes.*
+
+describe "Agencia de viajes"{
+    
+    //Primeros test
+    test "Un pack nacional sin beneficios vigentes devuelve el mismo precio base"{
+        const coorG = new Guia(cantDeViajes = 21, estaMotivado = true, aniosDeExperiencia = 5, rol = "guia")
+        const nac = new PackNacionales(duracionDeDias = 10, precioBase = 100, coordinador = coorG, provincia = "Chubut")
+        assert.equals(nac.valorFinal(), 100)
+    }
+
+    test "Un pack nacional con 2 beneficios vigentes suma correctamente sus costos al precio base."{
+        const ben = new BeneficiosEspeciales(tipo = "loco", costo = 20, estaVigente = true)
+        const ben1 = new BeneficiosEspeciales(tipo = "fabuloso", costo = 10, estaVigente = true)
+
+        const coorG1 = new Guia(cantDeViajes = 21, estaMotivado = true, aniosDeExperiencia = 5, rol = "guia")
+
+        const nac1 = new PackNacionales(duracionDeDias = 2, precioBase = 10, coordinador = coorG1, provincia = "Corrientes", beneficiosEspeciales = [ben, ben1])
+        assert.equals(nac1.valorFinal(), 40)
+    }
+
+    test "Un pack internacional sin beneficios vigentes calcula correctamente el total con el 20% de recargo."{
+        const coorG2 = new Guia(cantDeViajes = 21, estaMotivado = true, aniosDeExperiencia = 5, rol = "guia")
+        const inter = new PackInternacionales(duracionDeDias = 10, precioBase = 100, coordinador = coorG2, pais = "Peru", cantDeEscalas = 2, esDeInteres = true)
+        assert.equals(inter.valorFinal(), 120)
+    }
+
+    //Segundos test
+
+    test "Un guía motivado con 21 viajes realizados es considerado altamente calificado."{
+        const coor = new Guia(cantDeViajes = 21, estaMotivado = true, aniosDeExperiencia = 5, rol = "guia")
+        assert.that(coor.estaCalificado())
+    }
+
+    test "Un asistente logístico con menos de 3 años de experiencia no es calificado, aunque tenga muchos viajes."{
+        const coor1 = new AsistenteLogistico(cantDeViajes = 50, estaMotivado = true, aniosDeExperiencia = 2, rol = "asistenteLogistico")
+        assert.notThat(coor1.estaCalificado())
+    }
+
+    test "Un acompañante con cualquier cantidad de viajes es siempre calificado si supera los 20."{
+        const coor2 = new Acompañante(cantDeViajes = 50, estaMotivado = true, aniosDeExperiencia = 2, rol = "acompañante")
+        assert.that(coor2.estaCalificado())
+    }
+
+    //Tercer test 
+
+    test "Un packNacional es primium si tiene 10 dias de dur y su coor es calificado "{
+        const coor3 = new Guia(cantDeViajes = 21, estaMotivado = true, aniosDeExperiencia = 5, rol ="guia")
+        const nac2 = new PackNacionales(duracionDeDias = 12, precioBase = 10, coordinador = coor3, provincia = "Corrientes")
+
+        assert.that(nac2.esPrimium())
+
+    }
+
+    test "Un packInternacional es primium si el lugar es de interes , tiene mas de 20 dias de dur y no tiene escala"{
+        const coor4 = new Guia(cantDeViajes = 21, estaMotivado = true, aniosDeExperiencia = 5, rol ="guia")
+        const inter = new PackInternacionales(duracionDeDias = 100, precioBase = 100, coordinador = coor4, pais = "Peru", cantDeEscalas = 0, esDeInteres = true)
+
+        assert.that(inter.esPrimium())
+    }
+
+    //Cuartos test
+
+    test "un packProvincial es primium  si la cant de benef son may a 4, la cant de ciudades es mayor a 5 y hay 4 benef vigentes"{
+        const benef = new BeneficiosEspeciales(tipo = "loco", costo = 30, estaVigente = true)
+        const benef1 = new BeneficiosEspeciales(tipo = "fabuloso", costo = 100, estaVigente = true)
+        const benef2 = new BeneficiosEspeciales(tipo = "loco", costo = 200, estaVigente = true)
+        const benef3 = new BeneficiosEspeciales(tipo = "fabuloso", costo = 110, estaVigente = true)
+        const benef4 = new BeneficiosEspeciales(tipo = "fabuloso", costo = 120, estaVigente = true)
+
+        const coor3 = new Guia(cantDeViajes = 21, estaMotivado = true, aniosDeExperiencia = 5, rol ="guia")
+
+        const prov = new PackProvinciales(duracionDeDias = 12, precioBase = 10, beneficiosEspeciales = [benef, benef1, benef2, benef3, benef4], coordinador = coor3, provincia = "Corrientes", cantDeCiudad = 6)
+
+        assert.that(prov.esPrimium())
+    }
+
+    test "si el pack es primium se le agrega 5%"{
+        const benef = new BeneficiosEspeciales(tipo = "loco", costo = 30, estaVigente = true)
+        const benef1 = new BeneficiosEspeciales(tipo = "fabuloso", costo = 100, estaVigente = true)
+        const benef2 = new BeneficiosEspeciales(tipo = "loco", costo = 200, estaVigente = true)
+        const benef3 = new BeneficiosEspeciales(tipo = "fabuloso", costo = 110, estaVigente = true)
+        const benef4 = new BeneficiosEspeciales(tipo = "fabuloso", costo = 120, estaVigente = true)
+
+        const coor30 = new Guia(cantDeViajes = 21, estaMotivado = true, aniosDeExperiencia = 5, rol ="guia")
+
+        const prov = new PackProvinciales(duracionDeDias = 12, precioBase = 10, coordinador = coor30, provincia = "Corrientes", cantDeCiudad = 6, beneficiosEspeciales = [benef, benef1, benef2, benef3, benef4])
+
+        assert.equals(prov.valorFinal(), 598.5)
+    }
+
+}
+
